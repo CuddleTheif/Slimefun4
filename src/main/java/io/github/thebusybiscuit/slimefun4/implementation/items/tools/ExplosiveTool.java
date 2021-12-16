@@ -173,7 +173,15 @@ public class ExplosiveTool extends SimpleSlimefunItem<ToolUseHandler> implements
                 BlockStorage.clearBlockInfo(b);
             }
         } else {
-            b.breakNaturally(item);
+
+            /*
+             * Call a block break event in case another plugin wants to do something
+             */
+            BlockBreakEvent event = new BlockBreakEvent(b, p);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                b.breakNaturally(item);
+                
         }
 
         damageItem(p, item);
