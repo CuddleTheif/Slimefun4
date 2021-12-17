@@ -6,16 +6,21 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.bukkit.Axis;
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.bakedlibs.dough.blocks.Vein;
 import io.github.bakedlibs.dough.protection.Interaction;
+import io.github.thebusybiscuit.slimefun4.api.events.FakeBlockBreakEvent;
+import io.github.thebusybiscuit.slimefun4.api.events.FakePlayerInteractEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -56,7 +61,13 @@ public class LumberAxe extends SlimefunItem implements NotPlaceable {
 
                 for (Block b : logs) {
                     if (!BlockStorage.hasBlockInfo(b) && Slimefun.getProtectionManager().hasPermission(e.getPlayer(), b, Interaction.BREAK_BLOCK)) {
-                        breakLog(b);
+
+                        // Fake breaking the log for other plugins
+                        FakeBlockBreakEvent event = new FakeBlockBreakEvent(b, e.getPlayer());
+                        Bukkit.getServer().getPluginManager().callEvent(event);
+                        if (!event.isCancelled())
+                            b.breakNaturally(getItem());
+
                     }
                 }
             }
@@ -78,7 +89,13 @@ public class LumberAxe extends SlimefunItem implements NotPlaceable {
 
                     for (Block b : logs) {
                         if (!BlockStorage.hasBlockInfo(b) && Slimefun.getProtectionManager().hasPermission(e.getPlayer(), b, Interaction.BREAK_BLOCK)) {
-                            stripLog(b);
+
+                            // Fake stripping the log for other plugins
+                            FakePlayerInteractEvent event = new FakePlayerInteractEvent(e.getPlayer(), Action.RIGHT_CLICK_BLOCK, e.getItem(), block, e.getClickedFace());
+                            Bukkit.getServer().getPluginManager().callEvent(event);
+                            if (event.useInteractedBlock()!=Event.Result.DENY)
+                                stripLog(b);
+                                
                         }
                     }
                 }
@@ -91,6 +108,7 @@ public class LumberAxe extends SlimefunItem implements NotPlaceable {
     }
 
     private void stripLog(@Nonnull Block b) {
+
         b.getWorld().playSound(b.getLocation(), Sound.ITEM_AXE_STRIP, 1, 1);
         Axis axis = ((Orientable) b.getBlockData()).getAxis();
         b.setType(Material.valueOf("STRIPPED_" + b.getType().name()));
@@ -98,16 +116,7 @@ public class LumberAxe extends SlimefunItem implements NotPlaceable {
         Orientable orientable = (Orientable) b.getBlockData();
         orientable.setAxis(axis);
         b.setBlockData(orientable);
-    }
 
-    private void breakLog(@Nonnull Block b) {
-        b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
-
-        for (ItemStack drop : b.getDrops(getItem())) {
-            b.getWorld().dropItemNaturally(b.getLocation(), drop);
-        }
-
-        b.setType(Material.AIR);
     }
 
 }

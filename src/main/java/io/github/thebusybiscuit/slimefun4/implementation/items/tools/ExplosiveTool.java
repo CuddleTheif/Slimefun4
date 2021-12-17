@@ -6,6 +6,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import com.gmail.nossr50.events.fake.FakeBlockBreakEvent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -177,7 +179,7 @@ public class ExplosiveTool extends SimpleSlimefunItem<ToolUseHandler> implements
             /*
              * Call a block break event in case another plugin wants to do something
              */
-            BlockBreakEvent event = new BlockBreakEvent(b, p);
+            BlockBreakEvent event = new FakeBlockBreakEvent(b, p);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled())
                 b.breakNaturally(item);

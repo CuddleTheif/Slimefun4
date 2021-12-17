@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import io.github.bakedlibs.dough.protection.Interaction;
+import io.github.thebusybiscuit.slimefun4.api.events.FakeBlockBreakEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.attributes.NotPlaceable;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockBreakHandler;
@@ -109,6 +110,11 @@ public class BlockListener implements Listener {
 
         // Ignore blocks which we have marked as deleted (Fixes #2771)
         if (Slimefun.getTickerTask().isDeletedSoon(e.getBlock().getLocation())) {
+            return;
+        }
+
+        // Ignore break events faked by us
+        if (e instanceof FakeBlockBreakEvent){
             return;
         }
 

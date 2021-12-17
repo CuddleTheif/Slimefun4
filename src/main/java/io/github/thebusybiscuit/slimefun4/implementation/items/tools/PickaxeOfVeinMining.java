@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import io.github.bakedlibs.dough.blocks.Vein;
 import io.github.bakedlibs.dough.items.CustomItemStack;
 import io.github.bakedlibs.dough.protection.Interaction;
+import io.github.thebusybiscuit.slimefun4.api.events.FakeBlockBreakEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemGroup;
 import io.github.thebusybiscuit.slimefun4.api.items.ItemSetting;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
@@ -56,19 +58,13 @@ public class PickaxeOfVeinMining extends SimpleSlimefunItem<ToolUseHandler> {
     @ParametersAreNonnullByDefault
     private void breakBlocks(Player p, List<Block> blocks, int fortune, ItemStack tool) {
         for (Block b : blocks) {
-            if (Slimefun.getProtectionManager().hasPermission(p, b.getLocation(), Interaction.BREAK_BLOCK)) {
-                b.getWorld().playEffect(b.getLocation(), Effect.STEP_SOUND, b.getType());
 
-                if (tool.containsEnchantment(Enchantment.SILK_TOUCH)) {
-                    b.getWorld().dropItemNaturally(b.getLocation(), new ItemStack(b.getType()));
-                } else {
-                    for (ItemStack drop : b.getDrops(tool)) {
-                        b.getWorld().dropItemNaturally(b.getLocation(), drop.getType().isBlock() ? drop : new CustomItemStack(drop, fortune));
-                    }
-                }
-
-                b.setType(Material.AIR);
-            }
+            // Fake breaking the ore for other plugins
+            FakeBlockBreakEvent event = new FakeBlockBreakEvent(b, p);
+            Bukkit.getServer().getPluginManager().callEvent(event);
+            if (!event.isCancelled())
+                b.breakNaturally(getItem());
+                
         }
     }
 

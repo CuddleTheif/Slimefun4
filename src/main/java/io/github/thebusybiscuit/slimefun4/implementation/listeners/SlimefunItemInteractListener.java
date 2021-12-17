@@ -18,6 +18,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
+import io.github.thebusybiscuit.slimefun4.api.events.FakePlayerInteractEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
 import io.github.thebusybiscuit.slimefun4.core.handlers.BlockUseHandler;
 import io.github.thebusybiscuit.slimefun4.core.handlers.ItemUseHandler;
@@ -56,6 +57,10 @@ public class SlimefunItemInteractListener implements Listener {
             if (SlimefunUtils.isItemSimilar(e.getItem(), SlimefunItems.DEBUG_FISH, true)) {
                 return;
             }
+
+            // Ignore our fake event
+            if(e instanceof FakePlayerInteractEvent)
+                return;
 
             // Fire our custom Event
             PlayerRightClickEvent event = new PlayerRightClickEvent(e);
