@@ -93,7 +93,7 @@ public class LumberAxe extends SlimefunItem implements NotPlaceable {
                             // Fake stripping the log for other plugins
                             FakePlayerInteractEvent event = new FakePlayerInteractEvent(e.getPlayer(), Action.RIGHT_CLICK_BLOCK, e.getItem(), block, e.getClickedFace());
                             Bukkit.getServer().getPluginManager().callEvent(event);
-                            if (event.useInteractedBlock()!=Event.Result.DENY)
+                            if (event.useItemInHand()!=Event.Result.DENY)
                                 stripLog(b);
                                 
                         }
