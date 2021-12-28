@@ -1,10 +1,13 @@
 package io.github.thebusybiscuit.slimefun4.core.commands.subcommands;
 
+import java.util.Optional;
+
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import io.github.bakedlibs.dough.common.PlayerList;
 import io.github.thebusybiscuit.slimefun4.core.commands.SlimefunCommand;
 import io.github.thebusybiscuit.slimefun4.core.commands.SubCommand;
 import io.github.thebusybiscuit.slimefun4.core.guide.SlimefunGuide;
@@ -20,16 +23,27 @@ class GuideCommand extends SubCommand {
 
     @Override
     public void onExecute(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            if (sender.hasPermission("slimefun.command.guide")) {
+
+        Optional<Player> player = Optional.empty();
+        Player p = null;
+        if (args.length > 1){
+            player = PlayerList.findByName(args[1]);
+            if ((sender.hasPermission("slimefun.cheat.items") || !(sender instanceof Player))  && player.isPresent())
+                p = player.get();
+        }
+        else if(sender instanceof Player)
+            p = (Player) sender;
+        if(p!=null){
+            if (p.hasPermission("slimefun.command.guide")) {
                 SlimefunGuideMode design = SlimefunGuide.getDefaultMode();
-                ((Player) sender).getInventory().addItem(SlimefunGuide.getItem(design).clone());
+                p.getInventory().addItem(SlimefunGuide.getItem(design).clone());
             } else {
                 Slimefun.getLocalization().sendMessage(sender, "messages.no-permission", true);
             }
-        } else {
-            Slimefun.getLocalization().sendMessage(sender, "messages.only-players", true);
         }
+        else
+            Slimefun.getLocalization().sendMessage(sender, "messages.only-players", true);
+        
     }
 
 }
