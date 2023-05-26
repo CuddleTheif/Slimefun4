@@ -23,7 +23,6 @@ class GuideCommand extends SubCommand {
 
     @Override
     public void onExecute(CommandSender sender, String[] args) {
-
         Optional<Player> player = Optional.empty();
         Player p = null;
         if (args.length > 1){
@@ -34,7 +33,7 @@ class GuideCommand extends SubCommand {
         else if(sender instanceof Player)
             p = (Player) sender;
         if(p!=null){
-            if (p.hasPermission("slimefun.command.guide")) {
+            if (sender.hasPermission("slimefun.command.guide")) {
                 SlimefunGuideMode design = SlimefunGuide.getDefaultMode();
                 p.getInventory().addItem(SlimefunGuide.getItem(design).clone());
             } else {
