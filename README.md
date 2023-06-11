@@ -1,3 +1,8 @@
+# Cuddle's Slimefun 4
+*This is CuddleTheif's version of the Slimefun 4 plugin with some fixes and changes (mainly allowing items to be used if not researched but still needing research for creation).
+
+### (The below is the original Readme from the actual Slimefune 4 page)
+
 # Slimefun 4
 *Looking for the download link? [**Click here**](https://github.com/Slimefun/Slimefun4/blob/master/README.md#floppy_disk-download-slimefun-4)*
 
